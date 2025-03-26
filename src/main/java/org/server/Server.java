@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.commandPattern.clientCommands.ClientCommandFactory;
+import org.commandPattern.serverCommands.ServerCommandFactory;
+import org.commandPattern.serverCommands.ServerConsoleCommandListener;
 
 import java.net.InetSocketAddress;
 
@@ -30,8 +32,16 @@ public class Server {
                             " <port>");
         }
         int port = Integer.parseInt(args[0]);
+        ServerData serverData = new ServerData();
 
-        new Server(port, new ClientCommandFactory(new ServerData())).start();
+        //слушатель для серверных команд
+        ServerConsoleCommandListener consoleListener = new ServerConsoleCommandListener(new ServerCommandFactory(serverData), serverData);
+        Thread consoleThread = new Thread(consoleListener);
+        consoleThread.setDaemon(true);
+        consoleThread.start();
+
+        //старт сервера
+        new Server(port, new ClientCommandFactory(serverData)).start();
     }
 
     public void start() throws Exception {

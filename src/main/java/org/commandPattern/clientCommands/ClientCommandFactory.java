@@ -1,18 +1,16 @@
 package org.commandPattern.clientCommands;
 
 import org.commandPattern.Command;
+import org.commandPattern.CommandFactory;
 import org.server.ServerData;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientCommandFactory {
-    private Map<String, Command> commands;
-    private ServerData serverData;
+public class ClientCommandFactory extends CommandFactory {
 
     public ClientCommandFactory(ServerData serverData) {
-        commands = new HashMap<>();
-        this.serverData = serverData;
+        super(serverData);
 
         //добавление команд
         commands.put("login", new LoginCommand());
@@ -20,14 +18,8 @@ public class ClientCommandFactory {
         commands.put("create vote", new CreateVoteCommand(serverData));
         commands.put("view", new ViewCommand(serverData));
         commands.put("vote", new VoteCommand(serverData));
+        commands.put("delete", new DeleteVoteCommand(serverData));
 
     }
 
-    public Command getCommand(String commandName) {
-        return commands.get(commandName);
-    }
-
-    public String[] getCommandsArray() {
-        return commands.keySet().toArray(new String[0]);
-    }
 }

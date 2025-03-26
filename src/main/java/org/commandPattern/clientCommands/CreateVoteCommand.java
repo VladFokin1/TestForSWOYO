@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.commandPattern.Command;
 import org.server.ServerData;
 import org.server.ServerHandler;
+import org.server.UserAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class CreateVoteCommand extends DialogCommand {
         for (String option : context.options) {
             optionsMap.put(option, 0);
         }
-        serverData.createVoting(context.topic, context.voteName, context.description, optionsMap);
+        serverData.createVoting(context.topic, context.voteName, context.description, optionsMap, ctx.channel().attr(UserAttributes.USERNAME).get());
         ctx.writeAndFlush(String.format(
                 "Vote '%s' created! Options: %s",
                 context.voteName,

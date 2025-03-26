@@ -45,7 +45,9 @@ public class Client {
                 //System.out.println("Enter command: ");
                 String command = scanner.nextLine();
 
-                if ("exit".equalsIgnoreCase(command)) break;
+                if ("exit".equalsIgnoreCase(command)) {
+                    break;
+                }
 
                 channel.writeAndFlush(command);
             }
@@ -55,7 +57,9 @@ public class Client {
 
         } finally {
             group.shutdownGracefully().sync();
+            //System.exit(0);
         }
+
     }
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {

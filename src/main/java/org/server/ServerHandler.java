@@ -11,13 +11,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ChannelHandler.Sharable
 public class ServerHandler extends SimpleChannelInboundHandler<String> {
-    //private boolean isLoggedIn = false;
+
     private final ClientCommandFactory clientCommandFactory;
     private final Map<ChannelHandlerContext, Command> activeDialogs = new ConcurrentHashMap<>();
 
     public ServerHandler(ClientCommandFactory factory) {
         clientCommandFactory = factory;
     }
+
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String msg) {
@@ -53,13 +54,26 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         // Получаем команду из фабрики
         Command command = clientCommandFactory.getCommand(commandName);
 
-        // Выполняем команду
-        if (command instanceof DialogCommand) {
-            activeDialogs.put(ctx, command);
+        //проверка на комманду-логин
+        if (commandName.equals("login")) {
+            command.execute(commandArgs, ctx);
+            System.out.println("Command executed: " + commandName + "\n");
+            return;
         }
-        command.execute(commandArgs, ctx);
-        // Отправляем ответ клиенту
-        System.out.println("Command executed: " + commandName + "\n");
+
+        Boolean isAuthenticated = ctx.channel().attr(UserAttributes.AUTHENTICATED).get();
+        if (isAuthenticated != null && isAuthenticated) {
+            // Выполняем команду
+            if (command instanceof DialogCommand) {
+                activeDialogs.put(ctx, command);
+            }
+            command.execute(commandArgs, ctx);
+            // Отправляем ответ клиенту
+            System.out.println("Command executed: " + commandName + "\n");
+
+        } else {
+            ctx.writeAndFlush("You need to login first!");
+        }
         //endregion
 
 
@@ -75,6 +89,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         activeDialogs.remove(ctx);
+        System.out.println("Channel " + ctx.channel().id() + " inactive");
     }
 
     public void clearActiveDialog(ChannelHandlerContext ctx) {

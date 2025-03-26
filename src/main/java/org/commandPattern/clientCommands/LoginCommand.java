@@ -20,6 +20,7 @@ public class LoginCommand implements Command {
 
         if (!username.equals("")) {
             ctx.channel().attr(UserAttributes.USERNAME).set(username);
+            ctx.channel().attr(UserAttributes.AUTHENTICATED).set(true);
             ctx.writeAndFlush("Logged successfully! Welcome, " + username + "!");
         } else {
             ctx.writeAndFlush("Empty username. Login failed.");

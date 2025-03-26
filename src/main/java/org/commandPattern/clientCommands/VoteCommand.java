@@ -85,7 +85,7 @@ public class VoteCommand extends DialogCommand {
         String answer = serverData.vote(
                 voteContext.topicName,
                 voteContext.voteName,
-                voteOptionNames[Integer.parseInt(userInput)],
+                voteOptionNames[Integer.parseInt(userInput) - 1],
                 ctx.channel().attr(UserAttributes.USERNAME).get()
         );
         ctx.writeAndFlush(answer);

@@ -13,10 +13,10 @@ public class ServerData {
     }
 
     // Создать новое голосование в разделе
-    public void createVoting(String topicName, String voteName, String description, Map<String, Integer> options) {
+    public void createVoting(String topicName, String voteName, String description, Map<String, Integer> options, String creator) {
         Map<String, Vote> votes = topics.get(topicName);
         if (votes != null) {
-            votes.put(voteName, new Vote(description, options ));
+            votes.put(voteName, new Vote(description, options, creator));
         }
     }
 
@@ -29,7 +29,7 @@ public class ServerData {
             throw new Exception("There is no topic with name" + topic);
         } else {
             if (topics.values().stream().noneMatch(x -> x.keySet().stream().anyMatch(y -> y.equals(vote)))) {
-                throw new Exception("There is no vote" + vote + " in topic " + topic);
+                throw new Exception("There is no vote " + vote + " in topic " + topic);
             } else {
                 return topics.get(topic).get(vote).options.keySet().toArray(new String[0]);
             }
@@ -84,22 +84,99 @@ public class ServerData {
             answer.append(vote.description).append("\n");
 
             for (int i = 0; i < vote.options.keySet().size(); i++) {
-                answer.append(i).append(". ").append(vote.options.keySet().toArray()[i]).append(" : ").append(vote.options.values().toArray()[i]);
+                answer.append(i + 1).append(". ").append(vote.options.keySet().toArray()[i]).append(" : ").append(vote.options.values().toArray()[i]).append("\n");
             }
         }
         return answer.toString();
     }
 
+    public Map<String, Object> getDataForSave() {
+        // Создаем структуру для сохранения
+        Map<String, Object> saveData = new HashMap<>(); // LinkedHashMap сохраняет порядок
+
+        // Сохраняем все темы с голосованиями
+        Map<String, Object> topicsData = new HashMap<>();
+
+        for (Map.Entry<String, Map<String, Vote>> topicEntry : topics.entrySet()) {
+            String topicName = topicEntry.getKey();
+            Map<String, Object> votingsData = new HashMap<>();
+
+            for (Map.Entry<String, Vote> votingEntry : topicEntry.getValue().entrySet()) {
+                Vote voting = votingEntry.getValue();
+
+                // Формируем данные голосования
+                Map<String, Object> votingData = new HashMap<>();
+                votingData.put("description", voting.getDescription());
+                votingData.put("createdBy", voting.getCreatedBy());
+                //votingData.put("options", new ArrayList<>(voting.getOptions().keySet()));
+                votingData.put("results", new HashMap<>(voting.getOptions()));
+                votingData.put("voted users", new ArrayList<>(voting.getVotedUsers()));
+
+                votingsData.put(votingEntry.getKey(), votingData);
+            }
+
+            topicsData.put(topicName, votingsData);
+        }
+
+        // Добавляем мета-информацию
+
+        saveData.put("topics", topicsData);
+
+        return saveData;
+    }
+
+    public void restoreFromLoadedData(Map<String, Object> loadedData) {
+        topics.clear();
+        // Получаем данные по темам
+        Map<String, Map<String, Object>> topicsData =
+                (Map<String, Map<String, Object>>) loadedData.get("topics");
+
+        // Восстанавливаем каждую тему
+        for (Map.Entry<String, Map<String, Object>> topicEntry : topicsData.entrySet()) {
+            String topicName = topicEntry.getKey();
+            Map<String, Vote> votings = new ConcurrentHashMap<>();
+
+            // Восстанавливаем голосования
+            for (Map.Entry<String, Object> votingEntry : topicEntry.getValue().entrySet()) {
+                String votingName = votingEntry.getKey();
+                Map<String, Object> votingData = (Map<String, Object>) votingEntry.getValue();
+
+                Vote voting = new Vote();
+                voting.setDescription((String) votingData.get("description"));
+                voting.setCreatedBy((String) votingData.get("createdBy"));
+                // Восстанавливаем варианты и результаты
+                Map<String, Integer> options = new ConcurrentHashMap<>();
+                Map<String, Integer> results = (Map<String, Integer>) votingData.get("results");
+                options.putAll(results);
+                voting.setOptions(options);
+
+                // Восстанавливаем проголосовавших пользователей (если есть)
+                if (votingData.containsKey("votedUsers")) {
+                    List<String> votedUsers = (List<String>) votingData.get("votedUsers");
+                    votedUsers.forEach(voting::restoreVotedUser);
+                }
+
+                votings.put(votingName, voting);
+            }
+
+            this.topics.put(topicName, votings);
+        }
+    }
+
     private static class Vote {
 
         private String description;
+        private String createdBy;
         private Map<String, Integer> options = new ConcurrentHashMap<>();
         private List<String> votedUsers;
 
-        public Vote(String description, Map<String, Integer> options) {
+        public Vote() { }
+
+        public Vote(String description, Map<String, Integer> options, String createdBy) {
             this.description = description;
             this.options = options;
             this.votedUsers = Collections.synchronizedList(new ArrayList<>());
+            this.createdBy = createdBy;
         }
 
         public String getDescription() {
@@ -108,6 +185,30 @@ public class ServerData {
 
         public Map<String, Integer> getOptions() {
             return options;
+        }
+
+        public void setOptions(Map<String, Integer> options) {
+            this.options = options;
+        }
+
+        public List<String> getVotedUsers() {
+            return votedUsers;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public void restoreVotedUser(String username) {
+            this.votedUsers.add(username);
+        }
+
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
         }
     }
 }
