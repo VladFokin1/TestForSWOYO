@@ -51,7 +51,8 @@ public class CreateVoteCommand extends DialogCommand {
         }
     }
 
-    private void handleNextStep(ChannelHandlerContext ctx, String[] args) {
+    @Override
+    protected void handleNextStep(ChannelHandlerContext ctx, String[] args) {
         VoteCreationContext context = voteCreationContexts.get(ctx);
         String userInput = String.join(" ", args);
 

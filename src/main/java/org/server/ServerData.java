@@ -24,12 +24,12 @@ public class ServerData {
         return topics.keySet().toArray(new String[0]);
     }
 
-    public String[] getVoteOptionsNames(String topic, String vote) {
+    public String[] getVoteOptionsNames(String topic, String vote) throws Exception{
         if (topics.keySet().stream().noneMatch(x -> x.equals(topic))) {
-            return new String[] {"There is no topic with name" + topic};
+            throw new Exception("There is no topic with name" + topic);
         } else {
             if (topics.values().stream().noneMatch(x -> x.keySet().stream().anyMatch(y -> y.equals(vote)))) {
-                return new String[] {"There is no vote" + vote + " in topic " + topic};
+                throw new Exception("There is no vote" + vote + " in topic " + topic);
             } else {
                 return topics.get(topic).get(vote).options.keySet().toArray(new String[0]);
             }

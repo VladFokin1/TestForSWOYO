@@ -8,7 +8,9 @@ public abstract class DialogCommand implements Command{
     @Override
     public void execute(String[] args, ChannelHandlerContext ctx) { }
 
-    public void finishDialog(ChannelHandlerContext ctx) {
+    protected void finishDialog(ChannelHandlerContext ctx) {
         ((ServerHandler) ctx.pipeline().get("serverHandler")).clearActiveDialog(ctx);
     }
+
+    protected abstract void handleNextStep(ChannelHandlerContext ctx, String[] args);
 }
