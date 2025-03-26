@@ -15,10 +15,16 @@ public class ViewCommand implements Command {
     public void execute(String[] args, ChannelHandlerContext ctx) {
         if (args.length < 1 || args[0].isEmpty()) {
             ctx.writeAndFlush(serverData.viewTopics());
+
         } else {
+            String topicName = args[0].substring("-t=".length());
+
             if (args[0].startsWith("-t=") && args.length == 1) {
-                String topicName = args[0].substring("-t=".length());
                 ctx.writeAndFlush(serverData.viewVotesInTopic(topicName));
+
+            } else if (args[0].startsWith("-t=") && args[1].startsWith("-v=") && args.length == 2) {
+                String voteName = args[1].substring("-v=".length());
+                ctx.writeAndFlush(serverData.viewVote(topicName, voteName));
             }
         }
     }

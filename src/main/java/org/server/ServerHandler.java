@@ -46,9 +46,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
 
         // Извлекаем параметры
         String[] commandArgs = msg.substring(commandName.length()).trim().split(" ");
-        for (String str : commandArgs) {
+        /*for (String str : commandArgs) {
             System.out.println(str);
-        }
+        }*/
 
         // Получаем команду из фабрики
         Command command = clientCommandFactory.getCommand(commandName);

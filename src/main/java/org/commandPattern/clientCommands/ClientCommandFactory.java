@@ -19,7 +19,8 @@ public class ClientCommandFactory {
         commands.put("create topic", new CreateTopicCommand(serverData));
         commands.put("create vote", new CreateVoteCommand(serverData));
         commands.put("view", new ViewCommand(serverData));
-        // Добавьте другие команды по мере необходимости
+        commands.put("vote", new VoteCommand(serverData));
+
     }
 
     public Command getCommand(String commandName) {
