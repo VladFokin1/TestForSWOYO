@@ -12,12 +12,11 @@ public class ClientHandler extends
         SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        ctx.writeAndFlush("Hello there!");
+        //ctx.writeAndFlush("Hello there!");
     }
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String in) {
-        System.out.println(
-                "Received from server:\n" + in);
+        System.out.println(in);
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx,

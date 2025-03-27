@@ -39,7 +39,7 @@ public class ServerData {
     public String viewTopics() {
         StringBuilder res = new StringBuilder();
         if (topics.keySet().isEmpty())
-            return "There is no topics created yet!";
+            return "";
 
         for (String topic : topics.keySet()) {
             res.append(topic).append(" (votes in topic=").append(topics.get(topic).keySet().toArray().length).append(")\n");
@@ -86,6 +86,26 @@ public class ServerData {
             for (int i = 0; i < vote.options.keySet().size(); i++) {
                 answer.append(i + 1).append(". ").append(vote.options.keySet().toArray()[i]).append(" : ").append(vote.options.values().toArray()[i]).append("\n");
             }
+        }
+        return answer.toString();
+    }
+
+    public String deleteVote(String topicName, String voteName, String tryingUser) {
+        StringBuilder answer = new StringBuilder();
+
+        if (!topics.containsKey(topicName)) {
+            answer.append("There is no topic with name ").append(topicName);
+        } else if (!topics.get(topicName).containsKey(voteName)) {
+            answer.append("There is no vote with name ").append(voteName).append(" in topic ").append(topicName);
+        } else {
+
+            if (topics.get(topicName).get(voteName).createdBy.equals(tryingUser)) {
+                topics.get(topicName).remove(voteName);
+                answer.append("Vote ").append(voteName).append(" deleted!");
+            } else {
+                answer.append("You can not delete this vote!");
+            }
+
         }
         return answer.toString();
     }

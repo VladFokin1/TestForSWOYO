@@ -14,7 +14,7 @@ public class ViewCommand implements Command {
     @Override
     public void execute(String[] args, ChannelHandlerContext ctx) {
         if (args.length < 1 || args[0].isEmpty()) {
-            ctx.writeAndFlush(serverData.viewTopics());
+            ctx.writeAndFlush(serverData.viewTopics().isEmpty() ? "There is no topics created yet!" : serverData.viewTopics());
 
         } else {
             String topicName = args[0].substring("-t=".length());
