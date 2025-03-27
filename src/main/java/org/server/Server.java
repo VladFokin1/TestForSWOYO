@@ -30,6 +30,7 @@ public class Server {
             System.err.println(
                     "Usage: " + Server.class.getSimpleName() +
                             " <port>");
+            return;
         }
         int port = Integer.parseInt(args[0]);
         ServerData serverData = new ServerData();

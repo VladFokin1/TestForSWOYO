@@ -1,0 +1,16 @@
+{
+  "topics" : {
+    "games" : {
+      "DotaBestCarry" : {
+        "createdBy" : "fokin",
+        "description" : "Who is the best carry hero in dota2?",
+        "results" : {
+          "Lina" : 1,
+          "OD" : 0,
+          "IO" : 0
+        },
+        "voted users" : [ "fokin" ]
+      }
+    }
+  }
+}

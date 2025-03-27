@@ -37,16 +37,16 @@ public class VoteCommand extends DialogCommand {
                 String[] options = serverData.getVoteOptionsNames(topicName, voteName);
                 answer.append("Options in this vote:\n");
                 for (int i = 0; i < options.length; i++) {
-                    answer.append(i).append(". ").append(options[i]).append("\n");
+                    answer.append(i + 1).append(". ").append(options[i]).append("\n");
                 }
                 answer.append("Choose number of option you want to vote:\n");
-                ctx.writeAndFlush(answer);
+                ctx.writeAndFlush(answer.toString());
                 VoteContext voteContext= new VoteContext(topicName, voteName);
                 voteContexts.put(ctx, voteContext);
 
             } catch (Exception e) {
                 answer.append(e.getMessage());
-                ctx.writeAndFlush(answer);
+                ctx.writeAndFlush(answer.toString());
                 finishDialog(ctx);
                 voteContexts.remove(ctx);
             }
@@ -93,7 +93,11 @@ public class VoteCommand extends DialogCommand {
         voteContexts.remove(ctx);
     }
 
-    private static class VoteContext {
+    public Map<ChannelHandlerContext, VoteContext> getVoteContexts() {
+        return voteContexts;
+    }
+
+    static class VoteContext {
         private String topicName;
         private String voteName;
 

@@ -19,6 +19,10 @@ public class ServerHandler extends SimpleChannelInboundHandler<String> {
         clientCommandFactory = factory;
     }
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Channel " + ctx.channel().id() + " active");
+    }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, String msg) {

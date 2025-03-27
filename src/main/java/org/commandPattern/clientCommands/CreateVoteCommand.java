@@ -93,7 +93,7 @@ public class CreateVoteCommand extends DialogCommand {
         }
     }
 
-    private void finishCreation(ChannelHandlerContext ctx) {
+    void finishCreation(ChannelHandlerContext ctx) {
         VoteCreationContext context = voteCreationContexts.remove(ctx);
         Map<String, Integer> optionsMap = new ConcurrentHashMap<>();
         for (String option : context.options) {
@@ -108,8 +108,12 @@ public class CreateVoteCommand extends DialogCommand {
         finishDialog(ctx);
     }
 
+    public Map<ChannelHandlerContext, VoteCreationContext> getVoteCreationContexts() {
+        return voteCreationContexts;
+    }
 
-    private static class VoteCreationContext {
+
+    public static class VoteCreationContext {
         public String topic;
         public String voteName;
         public String description;
@@ -120,7 +124,7 @@ public class CreateVoteCommand extends DialogCommand {
 
 
 
-    private enum Step {
+    public enum Step {
         NAME, DESCRIPTION, OPTION_COUNT, OPTIONS
     }
 }

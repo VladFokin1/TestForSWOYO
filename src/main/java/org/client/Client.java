@@ -42,23 +42,19 @@ public class Client {
             System.out.println("Client started on port " + port + " with host "+host);
             Scanner scanner =  new Scanner(System.in);
             while(true) {
-                //System.out.println("Enter command: ");
                 String command = scanner.nextLine();
-
                 if ("exit".equalsIgnoreCase(command)) {
+                    System.out.println("Exiting...");
+                    channel.close().sync();
                     break;
                 }
-
                 channel.writeAndFlush(command);
             }
             channel.closeFuture().sync();
-
-
-
         } finally {
             group.shutdownGracefully().sync();
-            //System.exit(0);
         }
+
 
     }
     public static void main(String[] args) throws Exception {

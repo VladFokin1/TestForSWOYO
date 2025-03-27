@@ -27,6 +27,7 @@ public class ServerConsoleCommandListener implements Runnable{
             processConsoleCommand(input);
         }
         scanner.close();
+        System.exit(0);
     }
 
     private void processConsoleCommand(String cmd) {
